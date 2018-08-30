@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from config import settings
 
-from src.Handler import login,index
+from src.Handler import login,index,logout
 
 # class LoginHandler(tornado.web.RequestHandler):
 #     def get(self):
@@ -24,6 +24,7 @@ from src.Handler import login,index
 application = tornado.web.Application([
     (r'/login',login.LoginHandler),
     (r'/index',index.IndexHandler),
+    (r'/logout', logout.LogoutHandler),
 ],**settings.settings)
 
 

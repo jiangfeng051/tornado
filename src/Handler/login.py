@@ -30,7 +30,7 @@ class LoginHandler(BaseHandler):
         if result:
             self.set_secure_cookie('user_id',result['user_id'],expires_days=None)
             self.set_secure_cookie('user_name',username,expires_days=None)
-            self.redirect('index.html')
+            self.redirect('/index')
         else:
             msg = '用户名或密码错误'
             self.render('login.html',msg=msg)
