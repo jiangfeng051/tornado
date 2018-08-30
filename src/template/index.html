@@ -15,7 +15,6 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">{{request.session.username}}</a></li>
           </ul>
         </div>
       </div>
@@ -24,23 +23,16 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">账户信息<span class="sr-only">(current)</span></a></li>
-            <li><a href="https://v3.bootcss.com/examples/dashboard/#">账信息</a></li>
-            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Analytics</a></li>
-            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Export</a></li>
-            <li><a href="/multi_cmd.html">批量执行</a></li>
-            <li><a href="https://v3.bootcss.com/examples/dashboard/">批量上传</a></li>
-          </ul>
+          {% include 'menu_list.html' %}
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             {% block content %}
             <h1>欢迎</h1>
-                {% endblock %}
+                {% end %}
         </div>
       </div>
     </div>
   </body>
-{% endblock %}
+{% end %}
 {% block script %}
-{% endblock %}
+{% end %}
