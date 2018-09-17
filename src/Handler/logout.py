@@ -8,6 +8,7 @@ from utils.connectdb import DbConnect
 
 
 class LogoutHandler(tornado.web.RequestHandler):
+    #清除cookie，并且跳转到登录页面
     def get(self):
         self.clear_cookie('user_id')
         self.clear_cookie('user_name')
