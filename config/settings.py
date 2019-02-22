@@ -12,10 +12,10 @@ settings = {
 
 #数据库配置
 PY_MYSQL_CONN_DICT = {
-    "host": '10.0.1.40',
+    "host": '192.168.112.74',
     "port": 3306,
     "user": 'root',
     "passwd": 'zentech#123',
-    "db": 'myeye',
+    "db": 'k8sharbor',
     "charset": 'utf8'
 }
