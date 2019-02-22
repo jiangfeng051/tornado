@@ -22,7 +22,7 @@ class LoginHandler(BaseHandler):
         passwd = self.get_argument('passwd')
         db_conn = DbConnect()
         cursor = db_conn.connect()
-        sql = 'select user_id,username,passwd,status from user_info where username=%s and passwd=%s'
+        sql = 'select user_id,username,passwd from user_info where username=%s and passwd=%s'
         cursor.execute(sql,[username,passwd])
         result = cursor.fetchone()
         print(result)

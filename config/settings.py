@@ -19,3 +19,5 @@ PY_MYSQL_CONN_DICT = {
     "db": 'k8sharbor',
     "charset": 'utf8'
 }
+
+#kubernetes配置
