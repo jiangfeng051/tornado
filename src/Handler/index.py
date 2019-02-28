@@ -56,12 +56,21 @@ class ListDeployHandler(BaseHandler):
             if keyword in deploy.metadata.name:
                 deploy_dict = {}
                 deploy_dict['deploy'] = deploy.metadata.name
-                deploy_dict['image'] = deploy.spec.template.spec.containers[0].name
+                deploy_dict['image'] = deploy.spec.template.spec.containers[0].image
                 deploy_dict['replicas'] = deploy.status.replicas
                 deploy_dict['available'] = deploy.status.available_replicas
+                if not deploy_dict['available']:
+                    deploy_dict['available'] = 0
+                #根据deploy_dict['deploy']获取当前deploy前5的version号
                 sql='''
-                    select * from 
+                    select k8s_project.project_name,k8s_project_version.version_id from 
+                    k8s_project,k8s_project_version 
+                    where k8s_project.project_id = k8s_project_version.project_id 
+                    and k8s_project.project_name=%s order by k8s_project_version.gmt_create desc limit 3
                 '''
+                cursor.execute(sql,[deploy_dict['deploy']])
+                result=cursor.fetchall()
+                deploy_dict['version'] = result
                 deploy_list.append(deploy_dict)
         print(deploy_list)
         data['data'] = deploy_list
