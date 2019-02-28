@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block style %}
+  <style>
+    .content-head{
+      width: 100%;
+      overflow: hidden;
+    }
+    .content-body{
+      margin-top: 20px;
+      border-top: solid 2px black;
+      width: 100%;
+      overflow: auto;
+    }
+    .list-namespaces{
+      float: left;
+    }
+    .keyword-search{
+      float: left;
+      margin-left: 10px;
+    }
+    .search-btn{
+      float: left;
+      margin-left: 20px;
+    }
+  </style>
+{% end %}
+{% block body %}
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="https://v3.bootcss.com/examples/dashboard/#">Project name</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          {% include 'menu_list.html' %}
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% block content %}
+            <div class="content">
+              <form id="rollback">
+                <div class="content-head">
+                  <div class="list-namespaces">
+                    <select class="form-control" name="namespace" id="namespace">
+                      {% for ns in namespace_list %}
+                      <option value="{{ ns }}">{{ ns }}</option>
+                      {% end %}
+                    </select>
+                  </div>
+                  <div class="keyword-search">
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="exampleInputName2" placeholder="关键字" name="keyword">
+                    </div>
+                  </div>
+                  <div class="search-btn">
+                    <input class="btn btn-default" type="button" id="btn-search" value="查找">
+                  </div>
+                </div>
+                <div class="content-body">
+                  <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>标题1</th>
+                                <th>标题2</th>
+                                <th>标题3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>内容1</td>
+                                <td>内容2</td>
+                                <td>内容3</td>
+                            </tr>
+                            <tr>
+                                <td>内容1</td>
+                                <td>内容2</td>
+                                <td>内容3</td>
+                            </tr>
+                            <tr>
+                                <td>内容1</td>
+                                <td>内容2</td>
+                                <td>内容3</td>
+                            </tr>
+                        </tbody>
+                  </table>
+                </div>
+              </form>
+            </div>
+                {% end %}
+        </div>
+      </div>
+    </div>
+  </body>
+{% end %}
+{% block script %}
+<script src="/static/jquery-2.1.4.min.js"></script>
+<!--<script src="{{static_url("jquery-2.1.4.min.js")}}"></script>-->
+<script>
+  $(function () {
+    bindsarchevent();
+  });
+  function bindsarchevent() {
+      $('#btn-search').click(function () {
+          var data=$('#rollback').serialize();
+          var namespace=$('#namespace').val();
+          var keyword=$('#exampleInputName2').val();
+          console.log(data);
+          $.ajax({
+              url:'/listdeploy',
+              method:'POST',
+              data:data,
+              dataType:'JSON',
+              success:function (req) {
+                  // if (req.status) {
+                  //     result = req.data
+                  //     console.log(result)
+                  // }
+                  console.log(req.data)
+              }
+          })
+      })
+  }
+</script>
+{% end %}

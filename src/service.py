@@ -26,6 +26,7 @@ application = tornado.web.Application([
     (r'/index',index.IndexHandler),
     (r'/logout', logout.LogoutHandler),
     (r'/harbor',harbor.HarborHandler),
+    (r'/listdeploy',index.ListDeployHandler),
 ],**settings.settings)
 
 

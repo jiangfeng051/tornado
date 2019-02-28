@@ -39,4 +39,6 @@ class HarborHandler(tornado.web.RequestHandler):
                 else:
                     data['status'] = 'failed'
                     data['error'] = 'project {project_name} is not exist'.format(project_name=project_name)
+        if data['message']:
+            data['error'] = ''
         self.write(json_encode(data))
