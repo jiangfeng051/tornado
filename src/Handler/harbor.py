@@ -20,25 +20,19 @@ class HarborHandler(tornado.web.RequestHandler):
         cursor = db_conn.connect()
         #获取数据库中录入的项目id和项目名称，匹配上则插入version，匹配不上则返回错误信息
         sql = '''
-            select project_id,project_name from k8s_project
+            select project_id,project_name from k8s_project where project_name=%s
         '''
-        cursor.execute(sql)
-        result = cursor.fetchall()
+        cursor.execute(sql,[project_name])
+        result = cursor.fetchone()
         if result:
-            for project in result:
-                print(project['project_name'],project_name)
-                if project['project_name'] == project_name:
-                    project_id = project['project_id']
-                    sql = '''
-                        insert into k8s_project_version (version_id,project_id) value (%s,%s)
-                    '''
-                    cursor.execute(sql,[project_version,project_id])
-                    db_conn.close()
-                    data['message'] = 'project {project_name} version {project_version} add is success'.format(project_name=project_name,project_version=project_version)
-                    break
-                else:
-                    data['status'] = 'failed'
-                    data['error'] = 'project {project_name} is not exist'.format(project_name=project_name)
-        if data['message']:
-            data['error'] = ''
+            project_id = result['project_id']
+            sql = '''
+                insert into k8s_project_version (version_id,project_id) value (%s,%s)
+            '''
+            cursor.execute(sql,[project_version,project_id])
+            db_conn.close()
+            data['message'] = 'project {project_name} version {project_version} add is success'.format(project_name=project_name,project_version=project_version)
+        else:
+            data['status'] = 'failed'
+            data['error'] = 'project {project_name} is not exist'.format(project_name=project_name)
         self.write(json_encode(data))
