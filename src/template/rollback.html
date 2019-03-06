@@ -153,7 +153,7 @@
                           select.append(option_first);
                           for (var op in result[key]['version']){
                               var option = document.createElement('option');
-                              option.innerHTML = result[key]['version'][op]['version_id'];
+                              option.innerHTML = result[key]['version'][op];
                               select.append(option)
                           }
                           var versions = document.createElement('td');
@@ -210,7 +210,7 @@
                           select.append(option_first);
                           for (var op in result[key]['version']){
                               var option = document.createElement('option');
-                              option.innerHTML = result[key]['version'][op]['version_id'];
+                              option.innerHTML = result[key]['version'][op];
                               select.append(option)
                           }
                           var versions = document.createElement('td');

@@ -9,7 +9,15 @@ from tornado.escape import json_decode, json_encode, utf8
 from utils.connectk8s import K8sConnect
 from src.Handler.login import BaseHandler
 from kubernetes import watch,client,config
+from config import settings
+from utils.harborapi import HarborApi
 import json
+import urllib3
+# import requests
+import re
+
+
+urllib3.disable_warnings()
 
 
 k8s_conn = K8sConnect()
@@ -66,8 +74,6 @@ class RollbackHandler(BaseHandler):
         #根据namespace和keyword获取对应的deploy，如keyword为空，则获取当前namespace下的所有deploy，
         # v2 = client.AppsV1Api()
         api_response = v2.list_namespaced_deployment(namespace)
-        db_conn = DbConnect()
-        cursor = db_conn.connect()
         for deploy in api_response.items:
             if keyword in deploy.metadata.name:
                 deploy_dict = {}
@@ -78,14 +84,24 @@ class RollbackHandler(BaseHandler):
                 if not deploy_dict['available']:
                     deploy_dict['available'] = 0
                 #根据deploy_dict['deploy']获取当前deploy前5的version号
-                sql='''
-                    select k8s_project.project_name,k8s_project_version.version_id from 
-                    k8s_project,k8s_project_version 
-                    where k8s_project.project_id = k8s_project_version.project_id 
-                    and k8s_project.project_name=%s order by k8s_project_version.gmt_create desc limit 3
-                '''
-                cursor.execute(sql,[deploy_dict['deploy']])
-                result=cursor.fetchall()
+                # sql='''
+                #     select k8s_project.project_name,k8s_project_version.version_id from
+                #     k8s_project,k8s_project_version
+                #     where k8s_project.project_id = k8s_project_version.project_id
+                #     and k8s_project.project_name=%s order by k8s_project_version.gmt_create desc limit 3
+                # '''
+                # cursor.execute(sql,[deploy_dict['deploy']])
+                # result=cursor.fetchall()
+                #通过harborapi获取版本信息，通过正则，截取image中的harbor项目名称,如果正则取到值,获取最近5个版本的版本号
+                repository_name_re = re.findall('/.+:',deploy_dict['image'])
+                if repository_name_re:
+                    repository_name = repository_name_re[0][1:-1]
+                    harbor_api = HarborApi(settings.harbor_dict["host"],settings.harbor_dict["user"],settings.harbor_dict["passwd"])
+                    harbor_api.login_get_session_id()
+                    result = harbor_api.tags_info_list(repository_name)[-5:]
+                    result.reverse()
+                else:
+                    result=[]
                 deploy_dict['version'] = result
                 deploy_list.append(deploy_dict)
         print(deploy_list)
@@ -103,8 +119,6 @@ class ListDeployHandler(BaseHandler):
         self.render('rollback.html',namespace_list=namespace)
     @tornado.web.authenticated
     def post(self):
-        # arg_list = self.request.body()
-        # print(json.load(arg_list))
         namespace = self.get_argument('namespace')
         keyword = self.get_argument('keyword')
         print(namespace,keyword)
@@ -113,8 +127,6 @@ class ListDeployHandler(BaseHandler):
         #根据namespace和keyword获取对应的deploy，如keyword为空，则获取当前namespace下的所有deploy，
         v2 = client.AppsV1Api()
         api_response = v2.list_namespaced_deployment(namespace)
-        db_conn = DbConnect()
-        cursor = db_conn.connect()
         for deploy in api_response.items:
             if keyword in deploy.metadata.name:
                 deploy_dict = {}
@@ -125,14 +137,25 @@ class ListDeployHandler(BaseHandler):
                 if not deploy_dict['available']:
                     deploy_dict['available'] = 0
                 #根据deploy_dict['deploy']获取当前deploy前5的version号
-                sql='''
-                    select k8s_project.project_name,k8s_project_version.version_id from 
-                    k8s_project,k8s_project_version 
-                    where k8s_project.project_id = k8s_project_version.project_id 
-                    and k8s_project.project_name=%s order by k8s_project_version.gmt_create desc limit 3
-                '''
-                cursor.execute(sql,[deploy_dict['deploy']])
-                result=cursor.fetchall()
+                # sql='''
+                #     select k8s_project.project_name,k8s_project_version.version_id from
+                #     k8s_project,k8s_project_version
+                #     where k8s_project.project_id = k8s_project_version.project_id
+                #     and k8s_project.project_name=%s order by k8s_project_version.gmt_create desc limit 3
+                # '''
+                # cursor.execute(sql,[deploy_dict['deploy']])
+                # result=cursor.fetchall()
+                # print(result)
+                #通过harborapi获取版本信息，通过正则，截取image中的harbor项目名称,如果正则取到值,获取最近5个版本的版本号
+                repository_name_re = re.findall('/.+:',deploy_dict['image'])
+                if repository_name_re:
+                    repository_name = repository_name_re[0][1:-1]
+                    harbor_api = HarborApi(settings.harbor_dict["host"],settings.harbor_dict["user"],settings.harbor_dict["passwd"])
+                    harbor_api.login_get_session_id()
+                    result = harbor_api.tags_info_list(repository_name)[-5:]
+                    result.reverse()
+                else:
+                    result=[]
                 deploy_dict['version'] = result
                 deploy_list.append(deploy_dict)
         # print(deploy_list)

@@ -20,4 +20,11 @@ PY_MYSQL_CONN_DICT = {
     "charset": 'utf8'
 }
 
+#harbor配置
+harbor_dict = {
+    "host": '192.168.112.74',
+    "user": 'admin',
+    "passwd": 'Harbor12345'
+}
+
 #kubernetes配置
