@@ -13,7 +13,6 @@ from config import settings
 from utils.harborapi import HarborApi
 import json
 import urllib3
-# import requests
 import re
 
 
